@@ -1,0 +1,35 @@
+{
+  "name": "quick-chat-server",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "Gangasai kumar G",
+  "type": "module",
+  "main": "server.ts",
+  "scripts": {
+    "start": "node --env-file=config/env/.env --watch src/server.ts",
+    "dev": "node --env-file=config/env/.env.dev --watch src/server.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "body-parser": "^2.2.0",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "helmet": "^8.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.19.3",
+    "zod": "^4.1.12"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/cookie-parser": "^1.4.10",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.5",
+    "@types/helmet": "^0.0.48",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^24.10.0",
+    "typescript": "^5.9.3"
+  }
+}
