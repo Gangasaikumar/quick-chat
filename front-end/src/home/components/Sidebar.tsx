@@ -5,7 +5,7 @@ const Sidebar = () => {
     const [searchKey, setSearchKey] = useState<string>("");
   return (
     <div className="app-sidebar">
-      <Search setSearchKay={setSearchKey} serachKey={searchKey} />
+      <Search setSearchKey={setSearchKey} searchKey={searchKey} />
     {/* <!--USER LIST-->  */}
     </div>
   );

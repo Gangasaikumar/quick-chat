@@ -89,6 +89,7 @@ const loginController = async (req: Request, res: Response) => {
     const { email, password } = parsed.data;
 
     const user = await Users.findOne({ email });
+  
     if (!user) {
       return res.status(404).json({
         success: false,
