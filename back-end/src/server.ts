@@ -14,7 +14,11 @@ app.use(helmet());
 app.set("etag", false);
 
 // CORS setup for cookies
-const allowedOrigins = ["http://localhost:3000", "http://localhost:6281", "http://localhost:5173"];
+const allowedOrigins = [
+  "http://localhost:3000",
+  "http://localhost:6281",
+  "http://localhost:5173",
+];
 const corsOptions: CorsOptions = {
   origin: (origin, callback) => {
     if (!origin || allowedOrigins.includes(origin)) {
@@ -38,11 +42,11 @@ app.use(cookieParser());
 app.use("/api", routes);
 
 // Health check
-app.get("/health", (req, res) => {
-  res.send(" Server is healthy!");
+app.get("/health", (_req, res) => {
+  res.send("<h1>Server is healthy!</h1>");
 });
 
-// Start server and connect DB
-app.listen(PORT, async () => {
+// Start server
+app.listen(PORT, () => {
   console.log(`🚀 Server running at http://localhost:${PORT}`);
 });

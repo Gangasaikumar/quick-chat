@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "../redux-store/store";
 import Loader from "../components/Loader";
 import { hideLoader, showLoader } from "../redux-store/loaderSlice";
+import { setUser } from "../redux-store/userSlice";
 
 const Login = () => {
   const loader = useSelector((state: RootState) => state.loader as boolean);
@@ -22,8 +23,9 @@ const Login = () => {
       const loginRequest = await loginUserApi(user);
       if (loginRequest.success) {
         toast.success(loginRequest.message);
-        navigate("/home");
         localStorage.setItem("isLogin", "true");
+        dispatch(setUser(loginRequest.data));
+        navigate("/home");
       } else {
         toast.error(loginRequest.message);
       }
@@ -33,12 +35,12 @@ const Login = () => {
     dispatch(hideLoader());
   };
 
-  useEffect(()=>{
-    if(localStorage.getItem("isLogin")) navigate("/");
-  },[]);
+  useEffect(() => {
+    if (localStorage.getItem("isLogin")) navigate("/");
+  }, [navigate]);
   return (
     <>
-      {loader && <Loader /> }
+      {loader && <Loader />}
       <div className="container-back-img"></div>
       <div className="container-back-color"></div>
       <div className="card-container">

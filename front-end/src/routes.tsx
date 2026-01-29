@@ -7,13 +7,21 @@ import ProtectedRoute from "./components/ProtectedRoute";
 const router = createBrowserRouter([
   {
     path: "/",
-    element:<ProtectedRoute><Home /></ProtectedRoute>,
-    children:[
+    element: (
+      <ProtectedRoute>
+        <Home />
+      </ProtectedRoute>
+    ),
+    children: [
       {
-        path:"/home",
-        element:<ProtectedRoute><Home /></ProtectedRoute>
-      }
-    ]
+        path: "/home",
+        element: (
+          <ProtectedRoute>
+            <Home />
+          </ProtectedRoute>
+        ),
+      },
+    ],
   },
   {
     path: "/signup",

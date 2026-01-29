@@ -1,13 +1,14 @@
 // ProtectedRoute.tsx
-import { useEffect} from "react";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import type { RootState } from "../redux-store/store";
-import { getLoginUserData } from "../apiCalls/users";
+import { getAllUsers, getLoginUserData } from "../apiCalls/users";
 import { hideLoader, showLoader } from "../redux-store/loaderSlice";
-import { setUser } from "../redux-store/userSlice";
+import { setAllChats, setAllUsers, setUser } from "../redux-store/userSlice";
 import toast from "react-hot-toast";
 import Loader from "./Loader";
+import { getAllChats } from "../apiCalls/Chats";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -15,16 +16,12 @@ interface ProtectedRouteProps {
 
 const ProtectedRoute = (props: ProtectedRouteProps) => {
   const isLoading = useSelector((state: RootState) => state.loader);
+  const allUsers = useSelector((state: RootState) => state.userData.allUsers);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const getLoggedInUser = async () => {
     dispatch(showLoader());
-    if (!localStorage.getItem("isLogin")) {
-      navigate("/login");
-      dispatch(hideLoader());
-      return;
-    } 
     try {
       const userDataResponse = await getLoginUserData();
       if (userDataResponse.success) {
@@ -43,12 +40,55 @@ const ProtectedRoute = (props: ProtectedRouteProps) => {
     }
   };
 
+  const getAllUsersData = async () => {
+    dispatch(showLoader());
+    try {
+      if (allUsers.length <= 0) {
+        const usersResponse = await getAllUsers();
+        if (usersResponse.success) {
+          dispatch(setAllUsers(usersResponse.data));
+        } else {
+          toast.error(usersResponse.message);
+        }
+      } else {
+        return;
+      }
+    } catch {
+      toast.error("An error occurred while fetching users.");
+    } finally {
+      dispatch(hideLoader());
+    }
+  };
+
+  const getCurrentUserChats = async () => {
+    dispatch(showLoader());
+    try {
+      const chatsResponse = await getAllChats();
+      if (chatsResponse.success) {
+        dispatch(setAllChats(chatsResponse.data));
+      } else {
+        toast.error(chatsResponse.message);
+      }
+    } catch {
+      navigate("/login");
+      toast.error("An error occurred while fetching chats.");
+    } finally {
+      dispatch(hideLoader());
+    }
+  };
+
   useEffect(() => {
-    getLoggedInUser();
+    if (localStorage.getItem("isLogin")) {
+      getLoggedInUser();
+      getAllUsersData();
+      getCurrentUserChats();
+    } else {
+      navigate("/login");
+    }
   }, []);
 
   if (isLoading) {
-    return <Loader />; 
+    return <Loader />;
   }
 
   return <>{props.children}</>;

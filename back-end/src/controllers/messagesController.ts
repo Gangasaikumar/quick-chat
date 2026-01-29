@@ -20,7 +20,7 @@ const createMessage = async (req: AuthenticatedRequest, res: Response) => {
       {
         lastMessage: savedMessage._id,
         $inc: { unreadMessageCount: 1 },
-      }
+      },
     );
     res.status(201).send({
       message: "message sent sucessfully.!",
@@ -39,10 +39,12 @@ const createMessage = async (req: AuthenticatedRequest, res: Response) => {
 
 const getAllMessages = async (req: AuthenticatedRequest, res: Response) => {
   try {
-       // ✅ Initialize DB and Model
+    // ✅ Initialize DB and Model
     const db = await getDb("quick-chat");
     const Message = db.models.messages || db.model("messages", messageSchema);
-    const allMessages = await Message.find({ chatId:req.params.chatId }).sort({ createdAt: 1});
+    const allMessages = await Message.find({ chatId: req.params.chatId }).sort({
+      createdAt: 1,
+    });
 
     res.status(200).send({
       message: "messages fetched sucessfully.!",

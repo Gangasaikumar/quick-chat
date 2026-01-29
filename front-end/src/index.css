@@ -274,3 +274,173 @@ i {
   font-size: 25px;
   color: #e74c3c;
 }
+
+/*******************************************************
+********CSS FOR USER LIST COMPONENT*********************
+********************************************************/
+.filtered-user {
+  border-bottom: #ccc 1px solid;
+  padding: 10px 10px;
+  color: #28282B;
+  cursor: pointer;
+  background-color: white;
+}
+
+.filter-user-display {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.filter-user-details {
+  width: 60%;
+}
+
+.user-display-name {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.user-display-email {
+  font-size: 12px;
+}
+
+.user-default-avatar,
+.user-profile-image,
+.user-selected-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  font-size: 22px;
+  font-weight: bold;
+  text-align: center;
+  vertical-align: middle;
+  line-height: 50px;
+}
+
+.user-default-avatar {
+  background-color: #e74c3c;
+  color: white;
+}
+
+.user-selected-avatar {
+  background-color: white;
+  color: #e74c3c;
+}
+
+.user-start-chat {
+  width: 20%;
+}
+
+.user-start-chat-btn {
+  padding: 10px;
+  font-size: small;
+  border: none;
+  border-radius: 50px;
+  background-color: #ff6958;
+  color: white;
+  cursor: pointer;
+}
+
+.user-start-chat-btn:hover {
+  background-color: #c0392b;
+  color: white;
+}
+
+/*******************************************************
+*************CSS STYLES FOR CHAT AREA**************
+********************************************************/
+
+.app-chat-area {
+  background-color: white;
+  width: 70%;
+  padding: 20px 30px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  min-height: 70vh;
+}
+
+/*******************************************************
+*************CSS STYLES FOR CHAT AREA HEADER************
+********************************************************/
+.app-chat-area-header {
+  padding: 10px 30px;
+  margin-bottom: 20px;
+  border-bottom: #bbb 1px solid;
+  text-align: right;
+  font-weight: bold;
+  color: #e74c3c;
+}
+
+/*******************************************************
+********CSS FOR SELECTED USER***************************
+********************************************************/
+
+.selected-user {
+  border-bottom: #ccc 1px solid;
+  padding: 10px 10px;
+  color: white;
+  cursor: pointer;
+  background-color: #e74c3c;
+}
+
+.selected-user-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: white;
+  color: #e74c3c;
+  font-size: 22px;
+  font-weight: bold;
+  text-align: center;
+  vertical-align: middle;
+  line-height: 50px;
+}
+
+
+/*******************************************************
+********CSS STYLES FOR CHAT AREA & CHAT INPUT***********
+********************************************************/
+.main-chat-area {
+  flex: 1
+}
+
+.send-message-div {
+  position: relative;
+}
+
+.send-message-input {
+  width: 100%;
+  height: 40px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  color: #28282B;
+  border: #ddd 1px solid;
+}
+
+.send-message-btn {
+  position: absolute;
+  right: 10px;
+  font-size: 25px;
+  color: #e74c3c;
+  cursor: pointer;
+  border: none;
+  background-color: transparent;
+  margin-top: 8px;
+}
+
+.empty-chat-area {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.empty-chat-area h1 {
+  font-size: 20px;
+  color: #7e7e7e;
+}
