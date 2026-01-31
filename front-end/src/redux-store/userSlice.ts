@@ -1,14 +1,24 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { SignupUser } from "../apiCalls/auth";
 
-type UserState = SignupUser & {
- profilePic?:string
+export type UserState = SignupUser & {
+  _id: string;
+  profilePic?: string;
+  createdAt?: string;
+  updatedAt?: string;
 };
-const initialState: UserState = {
-  firstName: "",
-  lastName: "",
-  email: "",
-  password: "",
+
+export type ChatState = {
+  _id?: string;
+  members?: UserState[];
+  createdAt?: string;
+  updatedAt?: string;
+};
+const initialState = {
+  loggedUserData: {} as UserState,
+  allUsers: [] as UserState[],
+  allChats: [] as ChatState[],
+  selectedChat: {} as ChatState,
 };
 
 const userSlice = createSlice({
@@ -16,11 +26,22 @@ const userSlice = createSlice({
   initialState,
   reducers: {
     setUser: (_state, action) => {
-      return action.payload;
+      _state.loggedUserData = action.payload;
+    },
+    setAllUsers: (_state, action) => {
+      _state.allUsers = action.payload;
+    },
+    setAllChats: (_state, action) => {
+      _state.allChats = action.payload;
+    },
+
+    setSelectedChat: (_state, action) => {
+      _state.selectedChat = action.payload;
     },
   },
 });
 
-export const { setUser } = userSlice.actions;
+export const { setUser, setAllUsers, setAllChats, setSelectedChat } =
+  userSlice.actions;
 
 export default userSlice.reducer;

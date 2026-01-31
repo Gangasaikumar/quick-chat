@@ -15,4 +15,18 @@ const getLoginUserData = async () => {
   }
 };
 
-export { getLoginUserData };
+const getAllUsers = async () => {
+  try {
+    const responce = await axiosInstance.get("/api/get-all-users", {
+      withCredentials: true,
+    });
+    return responce.data;
+  } catch (error: unknown) {
+    if (error instanceof AxiosError) {
+      return error?.response?.data;
+    }
+    throw error;
+  }
+};
+
+export { getLoginUserData, getAllUsers };

@@ -1,15 +1,19 @@
 import { useSelector } from "react-redux";
-import type { RootState } from "../../redux-store/store";
-import type { SignupUser } from "../../apiCalls/auth";
+import type { RootState } from "../../../redux-store/store";
+import type { SignupUser } from "../../../apiCalls/auth";
 
 const Header = () => {
-  const userData: SignupUser = useSelector((state: RootState) => state.userData);
+  const userData: SignupUser = useSelector(
+    (state: RootState) => state.userData.loggedUserData,
+  );
 
   const firstName = userData?.firstName ?? "";
-  const lastName =userData?.lastName ?? "";
-  const fullName =firstName+" "+lastName;
-  const displayName = fullName ?? 'Guest';
-  const initials = userData?.firstName ? userData.firstName.charAt(0).toUpperCase() : 'G';
+  const lastName = userData?.lastName ?? "";
+  const fullName = firstName + " " + lastName;
+  const displayName = fullName ?? "Guest";
+  const initials = userData?.firstName
+    ? userData.firstName.charAt(0).toUpperCase()
+    : "N/A";
 
   return (
     <div className="app-header">
