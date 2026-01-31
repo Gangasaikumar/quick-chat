@@ -9,7 +9,7 @@ import {
 } from "../apiCalls/Messages";
 import toast from "react-hot-toast";
 import { AxiosError } from "axios";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 const ChatArea = () => {
   const { selectedChat, loggedUserData } = useSelector(
     (state: RootState) => state.userData,
@@ -48,12 +48,10 @@ const ChatArea = () => {
     }
   };
 
-  const handleGetAllMessages = useCallback(async () => {
+  const handleGetAllMessages = async () => {
     try {
       dispatch(showLoader());
       const response = await getAllMessages(selectedChat);
-      console.log("after retuning", response);
-      console.log("selectedChat", selectedChat);
       if (response.success) {
         setAllMessages(response.data);
       } else {
@@ -66,7 +64,7 @@ const ChatArea = () => {
     } finally {
       dispatch(hideLoader());
     }
-  }, [selectedChat._id]);
+  };
 
   const handleMessageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
@@ -75,7 +73,7 @@ const ChatArea = () => {
 
   useEffect(() => {
     if (selectedChat._id) {
-      // handleGetAllMessages();
+      handleGetAllMessages();
     }
   }, [selectedChat._id]);
 

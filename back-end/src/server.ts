@@ -39,7 +39,13 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 // Routes
-app.use("/api", routes);
+app.use(
+  "/api",
+  (req, res, next) => {
+    next();
+  },
+  routes,
+);
 
 // Health check
 app.get("/health", (_req, res) => {

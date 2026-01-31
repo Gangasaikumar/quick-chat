@@ -1,12 +1,12 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router";
-import { loginUserApi, type LoginUser } from "../apiCalls/auth";
+import { loginUserApi, type LoginUser } from "../../apiCalls/auth";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
-import type { RootState } from "../redux-store/store";
-import Loader from "../components/Loader";
-import { hideLoader, showLoader } from "../redux-store/loaderSlice";
-import { setUser } from "../redux-store/userSlice";
+import type { RootState } from "../../redux-store/store";
+import Loader from "../../components/Loader";
+import { hideLoader, showLoader } from "../../redux-store/loaderSlice";
+import { setUser } from "../../redux-store/userSlice";
 
 const Login = () => {
   const loader = useSelector((state: RootState) => state.loader as boolean);

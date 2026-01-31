@@ -14,6 +14,7 @@ const createChat = async (req: Request, res: Response) => {
     const Chats = db.models.chats || (await db.model("chats", chatSchema));
     const chat = new Chats(req.body);
     const savedChat = await chat.save();
+    await savedChat.populate("members");
     res.status(201).send({
       message: "chat created sucessfully.!",
       success: true,

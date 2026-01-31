@@ -1,6 +1,6 @@
 import { useSelector } from "react-redux";
-import type { RootState } from "../../redux-store/store";
-import type { SignupUser } from "../../apiCalls/auth";
+import type { RootState } from "../../../redux-store/store";
+import type { SignupUser } from "../../../apiCalls/auth";
 
 const Header = () => {
   const userData: SignupUser = useSelector(

@@ -32,7 +32,7 @@ const userSlice = createSlice({
       _state.allUsers = action.payload;
     },
     setAllChats: (_state, action) => {
-      _state.allChats = [...action.payload];
+      _state.allChats = action.payload;
     },
 
     setSelectedChat: (_state, action) => {

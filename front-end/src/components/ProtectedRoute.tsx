@@ -1,4 +1,3 @@
-// ProtectedRoute.tsx
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
@@ -7,7 +6,6 @@ import { getAllUsers, getLoginUserData } from "../apiCalls/users";
 import { hideLoader, showLoader } from "../redux-store/loaderSlice";
 import { setAllChats, setAllUsers, setUser } from "../redux-store/userSlice";
 import toast from "react-hot-toast";
-import Loader from "./Loader";
 import { getAllChats } from "../apiCalls/Chats";
 
 interface ProtectedRouteProps {
@@ -15,7 +13,6 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute = (props: ProtectedRouteProps) => {
-  const isLoading = useSelector((state: RootState) => state.loader);
   const allUsers = useSelector((state: RootState) => state.userData.allUsers);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -26,6 +23,8 @@ const ProtectedRoute = (props: ProtectedRouteProps) => {
       const userDataResponse = await getLoginUserData();
       if (userDataResponse.success) {
         dispatch(setUser(userDataResponse.data));
+        await getAllUsersData();
+        await getCurrentUserChats();
       } else {
         toast.error(userDataResponse.message);
         localStorage.removeItem("isLogin");
@@ -46,6 +45,7 @@ const ProtectedRoute = (props: ProtectedRouteProps) => {
       if (allUsers.length <= 0) {
         const usersResponse = await getAllUsers();
         if (usersResponse.success) {
+          dispatch(hideLoader());
           dispatch(setAllUsers(usersResponse.data));
         } else {
           toast.error(usersResponse.message);
@@ -80,16 +80,10 @@ const ProtectedRoute = (props: ProtectedRouteProps) => {
   useEffect(() => {
     if (localStorage.getItem("isLogin")) {
       getLoggedInUser();
-      getAllUsersData();
-      getCurrentUserChats();
     } else {
       navigate("/login");
     }
   }, []);
-
-  if (isLoading) {
-    return <Loader />;
-  }
 
   return <>{props.children}</>;
 };

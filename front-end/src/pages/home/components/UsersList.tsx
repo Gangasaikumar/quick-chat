@@ -1,16 +1,22 @@
 import { useDispatch, useSelector } from "react-redux";
-import type { RootState } from "../../redux-store/store";
+import type { RootState } from "../../../redux-store/store";
 import {
   setAllChats,
   setSelectedChat,
   type ChatState,
   type UserState,
-} from "../../redux-store/userSlice";
-import { createNewChat } from "../../apiCalls/Chats";
-import { hideLoader, showLoader } from "../../redux-store/loaderSlice";
+} from "../../../redux-store/userSlice";
+import { hideLoader, showLoader } from "../../../redux-store/loaderSlice";
 import toast from "react-hot-toast";
+import { createNewChat } from "../../../apiCalls/Chats";
 
-const UsersList = ({ searchKey }: { searchKey: string }) => {
+const UsersList = ({
+  searchKey,
+  clearSearchKey,
+}: {
+  searchKey: string;
+  clearSearchKey: () => void;
+}) => {
   const { allUsers, allChats, loggedUserData, selectedChat } = useSelector(
     (state: RootState) => state.userData,
   );
@@ -26,6 +32,7 @@ const UsersList = ({ searchKey }: { searchKey: string }) => {
         const updatedChat = [...allChats, newChat];
         dispatch(setAllChats(updatedChat));
         dispatch(setSelectedChat(newChat));
+        clearSearchKey();
       }
     } catch (error) {
       console.error("Error creating chat:", error);
@@ -35,6 +42,10 @@ const UsersList = ({ searchKey }: { searchKey: string }) => {
   };
 
   const handleOpenChat = (chatId: string) => {
+    const isAlreadyActiveChat = IsSelectedChat(chatId);
+    if (isAlreadyActiveChat) {
+      return;
+    }
     const chat = allChats.find(
       (chat) =>
         chat.members?.map((m) => m._id)?.includes(chatId) &&
@@ -42,28 +53,39 @@ const UsersList = ({ searchKey }: { searchKey: string }) => {
     );
     if (chat) {
       dispatch(setSelectedChat(chat));
+      clearSearchKey();
     }
   };
 
+  const IsSelectedChat = (chatId: string) => {
+    if (selectedChat._id) {
+      return selectedChat.members?.map((m) => m._id)?.includes(chatId);
+    }
+    return false;
+  };
+
   return (
-    <>
+    <div className="user-list">
       {allUsers
         .filter((user: UserState) => {
           return (
-            ((user.firstName.toLowerCase().includes(searchKey.toLowerCase()) ||
-              user.lastName.toLowerCase().includes(searchKey.toLowerCase())) &&
+            ((user.firstName
+              ?.toLowerCase()
+              ?.includes(searchKey?.toLowerCase()) ||
+              user.lastName
+                ?.toLowerCase()
+                ?.includes(searchKey?.toLowerCase())) &&
               searchKey) ||
             allChats.some((chat) =>
-              chat.members?.map((m) => m._id)?.includes(user._id),
+              chat.members?.some((m) => m._id === user._id),
             )
           );
         })
         .map((user: UserState) => (
           <div
             className={
-              selectedChat?.members?.map((m) => m._id)?.includes(user._id)
-                ? "selected-user"
-                : "filtered-user"
+              "chat-user" +
+              (IsSelectedChat(user._id) ? " selected-user" : " filtered-user")
             }
             key={user._id}
             onClick={(e) => {
@@ -81,13 +103,13 @@ const UsersList = ({ searchKey }: { searchKey: string }) => {
               ) : (
                 <div
                   className={
-                    selectedChat?.members?.map((m) => m._id)?.includes(user._id)
+                    IsSelectedChat(user._id)
                       ? "user-selected-avatar"
                       : "user-default-avatar"
                   }
                 >
-                  {user.firstName[0].toUpperCase() +
-                    user?.lastName?.[0].toUpperCase() || "N/A"}
+                  {user.firstName.charAt(0)?.toUpperCase() +
+                    user?.lastName.charAt(0)?.toUpperCase() || "N/A"}
                 </div>
               )}
               <div className="filter-user-details">
@@ -98,8 +120,8 @@ const UsersList = ({ searchKey }: { searchKey: string }) => {
               </div>
 
               <div className="user-start-chat">
-                {!allChats.find((chat: ChatState) =>
-                  chat?.members?.map((m) => m._id)?.includes(user._id),
+                {!allChats.some((chat: ChatState) =>
+                  chat?.members?.some((m) => m._id === user._id),
                 ) && (
                   <button
                     className="user-start-chat-btn"
@@ -115,7 +137,7 @@ const UsersList = ({ searchKey }: { searchKey: string }) => {
             </div>
           </div>
         ))}
-    </>
+    </div>
   );
 };
 

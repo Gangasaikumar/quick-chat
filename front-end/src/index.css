@@ -270,19 +270,39 @@ i {
 
 .user-search-btn {
   position: absolute;
-  right: 10px;
-  font-size: 25px;
+  right: 3px;
+  top: 35%;
+  transform: translateY(-50%);
+  font-size: 22px;
   color: #e74c3c;
 }
 
 /*******************************************************
 ********CSS FOR USER LIST COMPONENT*********************
 ********************************************************/
-.filtered-user {
+.chat-user {
+  border: 1px solid transparent;
   border-bottom: #ccc 1px solid;
   padding: 10px 10px;
-  color: #28282B;
+  color: white;
   cursor: pointer;
+}
+
+/* First item */
+.chat-user:first-child {
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+}
+
+/* Last item */
+.chat-user:last-child {
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+  border-bottom: none;
+}
+
+.filtered-user {
+  color: #28282B;
   background-color: white;
 }
 
@@ -356,7 +376,7 @@ i {
   background-color: white;
   width: 70%;
   padding: 20px 30px;
-  border-radius: 10px;
+  border-radius: 24px;
   display: flex;
   flex-direction: column;
   min-height: 70vh;
@@ -379,10 +399,6 @@ i {
 ********************************************************/
 
 .selected-user {
-  border-bottom: #ccc 1px solid;
-  padding: 10px 10px;
-  color: white;
-  cursor: pointer;
   background-color: #e74c3c;
 }
 
