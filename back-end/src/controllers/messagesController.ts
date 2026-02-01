@@ -3,6 +3,7 @@ import { getDb } from "../database/mongodb.ts";
 import type { Response } from "express";
 import type { AuthenticatedRequest } from "../routes/routes.ts";
 import { messageSchema } from "../database/models/messageSchema.ts";
+import mongoose from "mongoose";
 
 const createMessage = async (req: AuthenticatedRequest, res: Response) => {
   try {
@@ -12,8 +13,8 @@ const createMessage = async (req: AuthenticatedRequest, res: Response) => {
     const Chat = db.models.chats || db.model("chats", chatSchema);
     const message = new Message(req.body);
     const savedMessage = await message.save();
-    // const currentChat =  await Chat.findById(req.body?.chatId);
-    // currentChat.lastMessage= savedMessage._id;
+    // const currentChat = await Chat.findById(req.body?.chatId);
+    // currentChat.lastMessage = savedMessage._id;
     // await currentChat.save();
     await Chat.findOneAndUpdate(
       { _id: req.body.chatId },
