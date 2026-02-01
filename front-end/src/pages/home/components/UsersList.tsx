@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import type { RootState } from "../../../redux-store/store";
+import { store, type RootState } from "../../../redux-store/store";
 import {
   setAllChats,
   setSelectedChat,
@@ -11,6 +11,8 @@ import toast from "react-hot-toast";
 import { createNewChat } from "../../../apiCalls/Chats";
 import moment from "moment";
 import { formatUserName, getInitials } from "../../../utils/Helpers";
+import { useEffect } from "react";
+import { socket } from "../../../sockets/Socket";
 
 const UsersList = ({
   searchKey,
@@ -86,7 +88,9 @@ const UsersList = ({
     );
 
     if (!chat?.lastMessage?.createdAt) return;
-    return moment(chat?.lastMessage?.createdAt).format("LT");
+    return moment(chat?.lastMessage?.createdAt, "YYYY-MM-DD HH:mm:ss").format(
+      "LT",
+    );
   };
 
   const getUnreadMessageCount = (user: UserState) => {
@@ -120,6 +124,26 @@ const UsersList = ({
       });
     }
   };
+
+  useEffect(() => {
+    socket.on("receive-message", (message) => {
+      const selectedChat = store.getState().userData.selectedChat;
+      const allChats = store.getState().userData.allChats;
+      if (selectedChat._id != message.chatId) {
+        const updatedAllChats = allChats.map((chat) => {
+          if (chat._id === message.chatId) {
+            return {
+              ...chat,
+              lastMessage: message,
+              unreadMessageCount: (chat?.unreadMessageCount || 0) + 1,
+            };
+          }
+          return chat;
+        });
+        dispatch(setAllChats(updatedAllChats));
+      }
+    });
+  }, []);
 
   return (
     <div className="user-list">

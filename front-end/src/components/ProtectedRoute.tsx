@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import type { RootState } from "../redux-store/store";
@@ -7,7 +7,6 @@ import { hideLoader, showLoader } from "../redux-store/loaderSlice";
 import { setAllChats, setAllUsers, setUser } from "../redux-store/userSlice";
 import toast from "react-hot-toast";
 import { getAllChats } from "../apiCalls/Chats";
-
 interface ProtectedRouteProps {
   children: React.ReactNode;
 }
