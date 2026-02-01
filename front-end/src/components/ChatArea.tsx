@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "../redux-store/store";
-import type { UserState } from "../redux-store/userSlice";
+import { setAllChats, type UserState } from "../redux-store/userSlice";
 import { hideLoader, showLoader } from "../redux-store/loaderSlice";
 import {
   createNewMessage,
@@ -10,8 +10,11 @@ import {
 import toast from "react-hot-toast";
 import { AxiosError } from "axios";
 import { useState, useEffect } from "react";
+import moment from "moment";
+import { formatUserName } from "../utils/Helpers";
+import { clearUnReadMessageCount } from "../apiCalls/Chats";
 const ChatArea = () => {
-  const { selectedChat, loggedUserData } = useSelector(
+  const { selectedChat, loggedUserData, allChats } = useSelector(
     (state: RootState) => state.userData,
   );
   const dispatch = useDispatch();
@@ -66,6 +69,28 @@ const ChatArea = () => {
     }
   };
 
+  const handleClearUnReadMessages = async (chatId: string) => {
+    try {
+      dispatch(showLoader());
+      const response = await clearUnReadMessageCount(chatId);
+      if (response.success) {
+        toast.success(response.message);
+        // const updatedChat = allChats.map((chat) =>
+        //   chat._id === chatId ? response.data : chat,
+        // );
+        // dispatch(setAllChats([...allChats, updatedChat]));
+      } else {
+        toast.error(response.message);
+      }
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        toast.error(error.response?.data.message);
+      }
+    } finally {
+      dispatch(hideLoader());
+    }
+  };
+
   const handleMessageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     setMessage(e.target.value);
@@ -74,8 +99,26 @@ const ChatArea = () => {
   useEffect(() => {
     if (selectedChat._id) {
       handleGetAllMessages();
+      if (selectedChat?.lastMessage?.sender !== loggedUserData._id) {
+        handleClearUnReadMessages(selectedChat._id);
+      }
     }
   }, [selectedChat._id]);
+
+  const isSender = (message: messagePayload) =>
+    message.sender === loggedUserData._id;
+
+  const formatTime = (time: string | Date) => {
+    const now = moment();
+    const diff = now.diff(moment(time), "days");
+    if (diff < 1) {
+      return `Today ${moment(time).format("hh:mm A")}`;
+    } else if (diff === 1) {
+      return `Yesterday ${moment(time).format("hh:mm A")}`;
+    } else {
+      return moment(time).format("MMM D, YYYY, hh:mm A");
+    }
+  };
 
   return (
     <>
@@ -83,12 +126,48 @@ const ChatArea = () => {
         {Object.keys(selectedChat).length > 0 ? (
           <>
             <div className="app-chat-area-header">
-              {selectedChatMember?.firstName +
-                " " +
-                selectedChatMember?.lastName}
+              {formatUserName(selectedChatMember)}
             </div>
 
-            <div className="main-chat-area">CHAT AREA</div>
+            <div className="main-chat-area">
+              {allMessages.map((message) => (
+                <div
+                  className="message-container"
+                  style={
+                    isSender(message)
+                      ? { justifyContent: "end" }
+                      : { justifyContent: "start" }
+                  }
+                >
+                  <div>
+                    <div
+                      className={
+                        isSender(message) ? "send-message" : "received-message"
+                      }
+                    >
+                      {message.text}
+                    </div>
+                    <div
+                      className="message-timestamp"
+                      style={
+                        isSender(message)
+                          ? { float: "right" }
+                          : { float: "left" }
+                      }
+                    >
+                      {formatTime(message?.createdAt || "")}
+                      {isSender(message) && message.read && (
+                        <i
+                          className="fa fa-check-circle"
+                          aria-hidden="true"
+                          style={{ color: "#e74c3c" }}
+                        />
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
             <div className="send-message-div">
               <input
                 type="text"

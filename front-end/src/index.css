@@ -21,6 +21,10 @@
   font-family: "Poppins", sans-serif;
 }
 
+body {
+  overflow: hidden;
+}
+
 .container-back-img {
   background-image: url('/images/quick-chat-app-background.jpg');
   background-repeat: no-repeat;
@@ -308,13 +312,12 @@ i {
 
 .filter-user-display {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
+  width: 100%;
 }
 
 .filter-user-details {
-  width: 60%;
+  margin-left: 20px;
 }
 
 .user-display-name {
@@ -379,7 +382,7 @@ i {
   border-radius: 24px;
   display: flex;
   flex-direction: column;
-  min-height: 70vh;
+  height: 85vh;
 }
 
 /*******************************************************
@@ -420,11 +423,38 @@ i {
 ********CSS STYLES FOR CHAT AREA & CHAT INPUT***********
 ********************************************************/
 .main-chat-area {
-  flex: 1
+  flex: 1;
+  overflow-y: scroll;
+  padding: 10px 20px;
+}
+
+/*****************************************************
+***********CUSTOM SCROLLBAR FOR CHATAREA**************
+******************************************************/
+.main-chat-area::-webkit-scrollbar {
+  width: 5px;
+}
+
+/* Track */
+.main-chat-area::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 2px grey;
+  border-radius: 10px;
+}
+
+/* Handle */
+.main-chat-area::-webkit-scrollbar-thumb {
+  background: #e74c3c;
+  border-radius: 10px;
+}
+
+/* Handle on hover */
+.main-chat-area::-webkit-scrollbar-thumb:hover {
+  background: #e74c3c;
 }
 
 .send-message-div {
   position: relative;
+  margin-top: 20px;
 }
 
 .send-message-input {
@@ -459,4 +489,91 @@ i {
 .empty-chat-area h1 {
   font-size: 20px;
   color: #7e7e7e;
+}
+
+
+/*******************************************************
+***************CSS FOR CHAT MESSAGES********************
+********************************************************/
+.message-container {
+  display: flex;
+}
+
+.send-message,
+.received-message {
+  padding: 10px 20px;
+  margin-top: 5px;
+  border-radius: 6px;
+  font-size: 14px;
+  width: fit-content;
+}
+
+.send-message {
+  background-color: #e74c3c;
+  color: white;
+  margin-left: 100px;
+  border-top-right-radius: 0px;
+}
+
+.received-message {
+  background-color: #ddd;
+  color: #28282B;
+  margin-right: 100px;
+  border-bottom-left-radius: 0px;
+}
+
+.message-timestamp {
+  width: fit-content;
+  font-size: small;
+}
+
+/*****************************************************
+************MEDIA QUERY FOR USER LIST*****************
+******************************************************/
+
+@media only screen and (max-width: 1000px) {
+  .filter-user-details {
+    display: none;
+  }
+
+  .user-search-area {
+    display: none;
+  }
+
+  .app-sidebar {
+    width: 15%;
+  }
+
+  .app-chat-area {
+    width: 85%
+  }
+}
+
+.last-message-timestamp {
+  font-size: 12px;
+  color: #888;
+}
+
+.selected-user .last-message-timestamp {
+  color: white;
+}
+
+.unread-message-count {
+  text-align: center;
+  font-size: 13px;
+  background-color: #e74c3c;
+  color: white;
+  padding: 2px 5px;
+  width: 25px;
+  border-radius: 50%;
+}
+
+.user-last-chat-details {
+  margin-left: auto;
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+  justify-content: center;
 }

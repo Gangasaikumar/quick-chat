@@ -21,4 +21,15 @@ const createNewChat = async (members: string[]) => {
     throw error;
   }
 };
-export { getAllChats, createNewChat };
+const clearUnReadMessageCount = async (chatId: string) => {
+  try {
+    const response = await axiosInstance.post("/api/clear-unread-messages", {
+      chatId,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching chats:", error);
+    throw error;
+  }
+};
+export { getAllChats, createNewChat, clearUnReadMessageCount };

@@ -4,6 +4,7 @@ export type messagePayload = {
   chatId?: string;
   sender: string;
   text: string;
+  createdAt?: string;
 };
 const createNewMessage = async (message: messagePayload) => {
   try {
