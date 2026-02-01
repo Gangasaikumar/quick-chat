@@ -45,7 +45,6 @@ const ProtectedRoute = (props: ProtectedRouteProps) => {
       if (allUsers.length <= 0) {
         const usersResponse = await getAllUsers();
         if (usersResponse.success) {
-          dispatch(hideLoader());
           dispatch(setAllUsers(usersResponse.data));
         } else {
           toast.error(usersResponse.message);
@@ -70,7 +69,7 @@ const ProtectedRoute = (props: ProtectedRouteProps) => {
         toast.error(chatsResponse.message);
       }
     } catch {
-      navigate("/login");
+      // navigate("/login");
       toast.error("An error occurred while fetching chats.");
     } finally {
       dispatch(hideLoader());

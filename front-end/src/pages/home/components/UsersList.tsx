@@ -9,6 +9,8 @@ import {
 import { hideLoader, showLoader } from "../../../redux-store/loaderSlice";
 import toast from "react-hot-toast";
 import { createNewChat } from "../../../apiCalls/Chats";
+import moment from "moment";
+import { formatUserName, getInitials } from "../../../utils/Helpers";
 
 const UsersList = ({
   searchKey,
@@ -64,79 +66,131 @@ const UsersList = ({
     return false;
   };
 
+  const getLastMessage = (user: UserState) => {
+    const chat = allChats?.find((chat) =>
+      chat.members?.map((m) => m._id)?.includes(user._id),
+    );
+    const isYou =
+      chat?.lastMessage?.sender === loggedUserData._id ||
+      chat?.lastMessage?.sender === loggedUserData._id;
+
+    const lastMsg = chat?.lastMessage?.text ?? user.email ?? "";
+    const finalPrefix =
+      lastMsg.length > 25 ? `${lastMsg.slice(0, 25)}...` : lastMsg;
+    return isYou ? `You: ${finalPrefix}` : finalPrefix;
+  };
+
+  const getLastMessageTimeStamp = (user: UserState) => {
+    const chat = allChats?.find((chat) =>
+      chat.members?.map((m) => m._id)?.includes(user._id),
+    );
+
+    if (!chat?.lastMessage?.createdAt) return;
+    return moment(chat?.lastMessage?.createdAt).format("LT");
+  };
+
+  const getUnreadMessageCount = (user: UserState) => {
+    const chat = allChats?.find((chat) =>
+      chat.members?.map((m) => m._id)?.includes(user._id),
+    );
+    if (
+      chat &&
+      chat?.unreadMessageCount &&
+      chat?.lastMessage?.sender !== loggedUserData._id
+    ) {
+      return chat?.unreadMessageCount;
+    } else {
+      return 0;
+    }
+  };
+
+  const getSortedData = (): UserState[] => {
+    if (searchKey === "") {
+      return allChats
+        .map((eachChat) =>
+          eachChat?.members?.find((mem) => mem._id !== loggedUserData._id),
+        )
+        .filter((user): user is UserState => user !== undefined);
+    } else {
+      return allUsers.filter((user) => {
+        return (
+          user.firstName?.toLowerCase().includes(searchKey?.toLowerCase()) ||
+          user.lastName?.toLowerCase().includes(searchKey?.toLowerCase())
+        );
+      });
+    }
+  };
+
   return (
     <div className="user-list">
-      {allUsers
-        .filter((user: UserState) => {
-          return (
-            ((user.firstName
-              ?.toLowerCase()
-              ?.includes(searchKey?.toLowerCase()) ||
-              user.lastName
-                ?.toLowerCase()
-                ?.includes(searchKey?.toLowerCase())) &&
-              searchKey) ||
-            allChats.some((chat) =>
-              chat.members?.some((m) => m._id === user._id),
-            )
-          );
-        })
-        .map((user: UserState) => (
-          <div
-            className={
-              "chat-user" +
-              (IsSelectedChat(user._id) ? " selected-user" : " filtered-user")
-            }
-            key={user._id}
-            onClick={(e) => {
-              e.stopPropagation();
-              handleOpenChat(user._id);
-            }}
-          >
-            <div className="filter-user-display">
-              {user.profilePic ? (
-                <img
-                  src={user.profilePic}
-                  alt="Profile Pic"
-                  className="user-profile-image"
-                />
-              ) : (
-                <div
-                  className={
-                    IsSelectedChat(user._id)
-                      ? "user-selected-avatar"
-                      : "user-default-avatar"
-                  }
-                >
-                  {user.firstName.charAt(0)?.toUpperCase() +
-                    user?.lastName.charAt(0)?.toUpperCase() || "N/A"}
+      {getSortedData().map((user: UserState) => (
+        <div
+          className={
+            "chat-user" +
+            (IsSelectedChat(user._id) ? " selected-user" : " filtered-user")
+          }
+          key={user._id}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleOpenChat(user._id);
+          }}
+        >
+          <div className="filter-user-display">
+            {user.profilePic ? (
+              <img
+                src={user.profilePic}
+                alt="Profile Pic"
+                className="user-profile-image"
+              />
+            ) : (
+              <div
+                className={
+                  IsSelectedChat(user._id)
+                    ? "user-selected-avatar"
+                    : "user-default-avatar"
+                }
+              >
+                {getInitials(user)}
+              </div>
+            )}
+            <div className="filter-user-details">
+              <div className="user-display-name">{formatUserName(user)}</div>
+              <div className="user-display-email">{getLastMessage(user)}</div>
+            </div>
+            <div
+              className="user-last-chat-details"
+              style={{
+                alignSelf:
+                  getUnreadMessageCount(user) > 0 ? "center" : "flex-start",
+              }}
+            >
+              {getUnreadMessageCount(user) > 0 && (
+                <div className="unread-message-count">
+                  {getUnreadMessageCount(user)}
                 </div>
               )}
-              <div className="filter-user-details">
-                <div className="user-display-name">
-                  {user.firstName + " " + user.lastName}
-                </div>
-                <div className="user-display-email">{user.email}</div>
-              </div>
-
-              <div className="user-start-chat">
-                {!allChats.some((chat: ChatState) =>
-                  chat?.members?.some((m) => m._id === user._id),
-                ) && (
-                  <button
-                    className="user-start-chat-btn"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleCreateNewChat(user);
-                    }}
-                  >
-                    Start Chat
-                  </button>
-                )}
+              <div className="last-message-timestamp">
+                {getLastMessageTimeStamp(user)}
               </div>
             </div>
+            {!allChats.some((chat: ChatState) =>
+              chat?.members?.some((m) => m._id === user._id),
+            ) && (
+              <div className="user-start-chat">
+                <button
+                  className="user-start-chat-btn"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleCreateNewChat(user);
+                  }}
+                >
+                  Start Chat
+                </button>
+              </div>
+            )}
           </div>
-        ))}
+        </div>
+      ))}
     </div>
   );
 };

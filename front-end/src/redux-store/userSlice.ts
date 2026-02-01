@@ -6,13 +6,16 @@ export type UserState = SignupUser & {
   profilePic?: string;
   createdAt?: string;
   updatedAt?: string;
+  lastMessage?: { text: string; sender: string; createdAt: string };
 };
 
 export type ChatState = {
+  lastMessage?: { text: string; sender: string; createdAt: string };
   _id?: string;
   members?: UserState[];
   createdAt?: string;
   updatedAt?: string;
+  unreadMessageCount?: number;
 };
 const initialState = {
   loggedUserData: {} as UserState,

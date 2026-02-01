@@ -1,13 +1,20 @@
 import express, { type Request } from "express";
 import {
-    authMiddleware,
+  authMiddleware,
   getAllUsers,
   getUser,
   loginController,
   signupController,
 } from "../controllers/authController.ts";
-import { createChat, getAllChars } from "../controllers/chatController.ts";
-import { createMessage, getAllMessages } from "../controllers/messagesController.ts";
+import {
+  createChat,
+  getAllChats,
+  clearUnreadMessages,
+} from "../controllers/chatController.ts";
+import {
+  createMessage,
+  getAllMessages,
+} from "../controllers/messagesController.ts";
 
 export interface AuthenticatedRequest extends Request {
   user?: { userId: string; email: string };
@@ -22,10 +29,10 @@ routes.get("/get-logged-user", authMiddleware, getUser);
 routes.get("/get-all-users", authMiddleware, getAllUsers);
 
 routes.post("/create-new-chat", authMiddleware, createChat);
-routes.get("/get-all-chats",authMiddleware, getAllChars );
+routes.get("/get-all-chats", authMiddleware, getAllChats);
+routes.post("/clear-unread-messages", authMiddleware, clearUnreadMessages);
 
 routes.post("/new-message", authMiddleware, createMessage);
-routes.get("/get-all-messages/:chatId",authMiddleware, getAllMessages );
-
+routes.get("/get-all-messages/:chatId", authMiddleware, getAllMessages);
 
 export default routes;

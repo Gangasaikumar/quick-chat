@@ -1,19 +1,12 @@
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../redux-store/store";
 import type { SignupUser } from "../../../apiCalls/auth";
+import { formatUserName, getInitials } from "../../../utils/Helpers";
 
 const Header = () => {
   const userData: SignupUser = useSelector(
     (state: RootState) => state.userData.loggedUserData,
   );
-
-  const firstName = userData?.firstName ?? "";
-  const lastName = userData?.lastName ?? "";
-  const fullName = firstName + " " + lastName;
-  const displayName = fullName ?? "Guest";
-  const initials = userData?.firstName
-    ? userData.firstName.charAt(0).toUpperCase()
-    : "N/A";
 
   return (
     <div className="app-header">
@@ -22,8 +15,8 @@ const Header = () => {
         Quick Chat
       </div>
       <div className="app-user-profile">
-        <div className="logged-user-name">{displayName}</div>
-        <div className="logged-user-profile-pic">{initials}</div>
+        <div className="logged-user-name">{formatUserName(userData)}</div>
+        <div className="logged-user-profile-pic">{getInitials(userData)}</div>
       </div>
     </div>
   );
