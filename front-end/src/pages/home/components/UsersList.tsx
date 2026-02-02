@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import type { RootState } from "../../../redux-store/store";
+import { store, type RootState } from "../../../redux-store/store";
 import {
   setAllChats,
   setSelectedChat,
@@ -11,6 +11,8 @@ import toast from "react-hot-toast";
 import { createNewChat } from "../../../apiCalls/Chats";
 import moment from "moment";
 import { formatUserName, getInitials } from "../../../utils/Helpers";
+import { useEffect } from "react";
+import { socket } from "../../../sockets/Socket";
 
 const UsersList = ({
   searchKey,
@@ -19,9 +21,8 @@ const UsersList = ({
   searchKey: string;
   clearSearchKey: () => void;
 }) => {
-  const { allUsers, allChats, loggedUserData, selectedChat } = useSelector(
-    (state: RootState) => state.userData,
-  );
+  const { allUsers, allChats, loggedUserData, selectedChat, onlineUsers } =
+    useSelector((state: RootState) => state.userData);
   const dispatch = useDispatch();
 
   const handleCreateNewChat = async (user: UserState) => {
@@ -86,7 +87,9 @@ const UsersList = ({
     );
 
     if (!chat?.lastMessage?.createdAt) return;
-    return moment(chat?.lastMessage?.createdAt).format("LT");
+    return moment(chat?.lastMessage?.createdAt, "YYYY-MM-DD HH:mm:ss").format(
+      "LT",
+    );
   };
 
   const getUnreadMessageCount = (user: UserState) => {
@@ -121,6 +124,33 @@ const UsersList = ({
     }
   };
 
+  useEffect(() => {
+    socket.off("message-count").on("message-count", (message) => {
+      const selectedChat = store.getState().userData.selectedChat;
+      let allChats = store.getState().userData.allChats;
+      if (selectedChat._id != message.chatId) {
+        const updatedAllChats = allChats.map((chat) => {
+          if (chat._id === message.chatId) {
+            return {
+              ...chat,
+              lastMessage: message,
+              unreadMessageCount: (chat?.unreadMessageCount || 0) + 1,
+            };
+          }
+          return chat;
+        });
+        allChats = updatedAllChats;
+      }
+      //  find the latest chat
+      const latestChat = allChats.find((chat) => chat._id === message.chatId);
+      // get all other chats
+      const otherChats = allChats.filter((chat) => chat._id != message.chatId);
+      // create new array latest chat on top & then other chats
+      allChats = [latestChat as ChatState, ...otherChats];
+      dispatch(setAllChats(allChats));
+    });
+  }, []);
+
   return (
     <div className="user-list">
       {getSortedData().map((user: UserState) => (
@@ -136,11 +166,16 @@ const UsersList = ({
           }}
         >
           <div className="filter-user-display">
-            {user.profilePic ? (
+            {user.profilePic && user.profilePic.trim() !== "" ? (
               <img
                 src={user.profilePic}
                 alt="Profile Pic"
                 className="user-profile-image"
+                style={
+                  onlineUsers?.includes(user._id)
+                    ? { border: "4px solid #82e0aa", lineHeight: "42px" }
+                    : {}
+                }
               />
             ) : (
               <div
@@ -148,6 +183,11 @@ const UsersList = ({
                   IsSelectedChat(user._id)
                     ? "user-selected-avatar"
                     : "user-default-avatar"
+                }
+                style={
+                  onlineUsers?.includes(user._id)
+                    ? { border: "4px solid #82e0aa", lineHeight: "42px" }
+                    : {}
                 }
               >
                 {getInitials(user)}

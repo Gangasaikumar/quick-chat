@@ -7,10 +7,14 @@ const messageSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "users",
     },
-    text: { type: String, required: true },
+    text: { type: String, required: false },
+    image: {
+      type: String,
+      required: false,
+    },
     read: { type: Boolean, default: false },
   },
-  { timestamps: true, versionKey: false }
+  { timestamps: true, versionKey: false },
 );
 
 export { messageSchema };

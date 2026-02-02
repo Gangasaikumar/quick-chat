@@ -5,6 +5,7 @@ import { userSchema } from "../database/models/usersSchema.ts";
 import { getDb } from "../database/mongodb.ts";
 import { loginSchema, signupSchema } from "./validationSchema.ts";
 import type { AuthenticatedRequest } from "../routes/routes.ts";
+import cloudinary from "../utils/cloudinary.ts";
 
 const JWT_SECRET = process.env.JWT_SECRET || "supersecretkey";
 const COOKIE_NAME = "auth_token";
@@ -22,7 +23,7 @@ const signupController = async (req: Request, res: Response) => {
       return res.status(400).json({
         success: false,
         message: `Invalid input: missing or invalid fields ${invalid.join(
-          ", "
+          ", ",
         )}`,
       });
     }
@@ -78,7 +79,7 @@ const loginController = async (req: Request, res: Response) => {
     const parsed = loginSchema.safeParse(req.body.loginData);
     if (!parsed.success) {
       const invalidFields = parsed.error.issues.map((issue) =>
-        issue.path.join(".")
+        issue.path.join("."),
       );
       return res.status(400).json({
         success: false,
@@ -89,7 +90,7 @@ const loginController = async (req: Request, res: Response) => {
     const { email, password } = parsed.data;
 
     const user = await Users.findOne({ email });
-  
+
     if (!user) {
       return res.status(404).json({
         success: false,
@@ -108,7 +109,7 @@ const loginController = async (req: Request, res: Response) => {
     const token = jwt.sign(
       { userId: user._id, email: user.email },
       JWT_SECRET,
-      { expiresIn: "7d" }
+      { expiresIn: "7d" },
     );
 
     res.cookie(COOKIE_NAME, token, {
@@ -135,7 +136,10 @@ const loginController = async (req: Request, res: Response) => {
 };
 
 /* -------------------------- AUTH MIDDLEWARE -------------------------- */
-const authMiddleware = async (req: AuthenticatedRequest, res: Response, next: NextFunction
+const authMiddleware = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction,
 ) => {
   try {
     const token = req.cookies?.[COOKIE_NAME];
@@ -233,10 +237,67 @@ const getAllUsers = async (req: AuthenticatedRequest, res: Response) => {
   }
 };
 
+const uploadProfilePic = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    if (!req.user || !req.user.userId) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized: No user found in token.",
+      });
+    }
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: "No image provided",
+      });
+    }
+    // Convert buffer → base64 for Cloudinary
+    const base64Image = `data:${req.file.mimetype};base64,${req.file.buffer.toString(
+      "base64",
+    )}`;
+    const uploadedImage = await cloudinary.uploader.upload(base64Image, {
+      folder: "quick-chat",
+    });
+
+    if (!uploadedImage) {
+      return res.status(400).json({
+        success: false,
+        message: "Image upload failed.",
+      });
+    }
+
+    // ✅ Initialize DB and Model
+    const db = await getDb("quick-chat");
+    const Users = db.models.users || db.model("users", userSchema);
+    const updatedUser = await Users.findByIdAndUpdate(
+      { _id: req.user.userId },
+      {
+        profilePic: uploadedImage?.secure_url,
+      },
+      { new: true },
+    );
+    return res.status(200).json({
+      success: true,
+      message: "Profile pic uploaded successfully.",
+      data: updatedUser,
+    });
+  } catch (error: unknown) {
+    console.error("Upload profile pic error:", error);
+    res.status(500).json({
+      success: false,
+      message:
+        error instanceof Error
+          ? error.message
+          : "An unexpected error occurred.",
+    });
+  }
+};
+
 export {
   signupController,
   loginController,
   authMiddleware,
   getUser,
   getAllUsers,
+  uploadProfilePic,
 };

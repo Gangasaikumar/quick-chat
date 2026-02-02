@@ -17,11 +17,15 @@ export type ChatState = {
   updatedAt?: string;
   unreadMessageCount?: number;
 };
+
+export type OnlineUser = string[];
+
 const initialState = {
   loggedUserData: {} as UserState,
   allUsers: [] as UserState[],
   allChats: [] as ChatState[],
   selectedChat: {} as ChatState,
+  onlineUsers: [] as OnlineUser,
 };
 
 const userSlice = createSlice({
@@ -41,10 +45,18 @@ const userSlice = createSlice({
     setSelectedChat: (_state, action) => {
       _state.selectedChat = action.payload;
     },
+    setOnlineUsers: (_state, action) => {
+      _state.onlineUsers = action.payload;
+    },
   },
 });
 
-export const { setUser, setAllUsers, setAllChats, setSelectedChat } =
-  userSlice.actions;
+export const {
+  setUser,
+  setAllUsers,
+  setAllChats,
+  setSelectedChat,
+  setOnlineUsers,
+} = userSlice.actions;
 
 export default userSlice.reducer;

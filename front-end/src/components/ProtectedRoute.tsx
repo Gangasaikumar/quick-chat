@@ -7,7 +7,6 @@ import { hideLoader, showLoader } from "../redux-store/loaderSlice";
 import { setAllChats, setAllUsers, setUser } from "../redux-store/userSlice";
 import toast from "react-hot-toast";
 import { getAllChats } from "../apiCalls/Chats";
-
 interface ProtectedRouteProps {
   children: React.ReactNode;
 }
