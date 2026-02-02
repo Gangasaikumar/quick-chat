@@ -1,3 +1,4 @@
+import moment from "moment";
 import type { SignupUser } from "../apiCalls/auth";
 import type { UserState } from "../redux-store/userSlice";
 
@@ -23,4 +24,9 @@ export const formatUserName = (user?: UserState | SignupUser): string => {
     : "";
 
   return `${first}${first && last ? " " : ""}${last}`;
+};
+
+export const formattedDate = (date: string | undefined) => {
+  if (!date) return "";
+  return moment(date, "YYYY-MM-DD HH:mm:ss").format("MMM DD, YYYY");
 };

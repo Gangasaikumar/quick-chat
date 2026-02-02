@@ -5,6 +5,7 @@ import {
   getUser,
   loginController,
   signupController,
+  uploadProfilePic,
 } from "../controllers/authController.ts";
 import {
   createChat,
@@ -15,6 +16,7 @@ import {
   createMessage,
   getAllMessages,
 } from "../controllers/messagesController.ts";
+import { upload } from "../utils/upload.ts";
 
 export interface AuthenticatedRequest extends Request {
   user?: { userId: string; email: string };
@@ -27,6 +29,12 @@ routes.post("/signup", signupController);
 routes.post("/login", loginController);
 routes.get("/get-logged-user", authMiddleware, getUser);
 routes.get("/get-all-users", authMiddleware, getAllUsers);
+routes.post(
+  "/upload-profile-pic",
+  authMiddleware,
+  upload.single("image"),
+  uploadProfilePic,
+);
 
 routes.post("/create-new-chat", authMiddleware, createChat);
 routes.get("/get-all-chats", authMiddleware, getAllChats);

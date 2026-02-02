@@ -37,7 +37,11 @@ const corsOptions: CorsOptions = {
 
 // Apply middlewares
 app.use(cors(corsOptions));
-app.use(express.json());
+app.use(
+  express.json({
+    limit: "50mb",
+  }),
+);
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
@@ -57,6 +61,8 @@ const io = new Server(server, {
   },
 });
 
+const onlineUser = new Set();
+
 io.on("connection", (socket) => {
   socket.on("connect", (msg) => {
     console.log("User connected:", socket.id);
@@ -66,10 +72,14 @@ io.on("connection", (socket) => {
     console.log("User joined room:", userId);
   });
 
-  socket.on("send-message", (message) => {
+  socket.once("send-message", (message) => {
     io.to(message.members[0])
       .to(message.members[1])
       .emit("receive-message", message);
+
+    io.to(message.members[0])
+      .to(message.members[1])
+      .emit("message-count", message);
   });
 
   socket.on("clear-unread-messages", (message) => {
@@ -78,8 +88,24 @@ io.on("connection", (socket) => {
       .emit("message-count-cleared", message);
   });
 
+  socket.on("typing", (message) => {
+    io.to(message.members[0])
+      .to(message.members[1])
+      .emit("user-typing", message);
+  });
+
+  socket.on("user-online", (userId) => {
+    onlineUser.add(userId);
+    io.emit("online-users", Array.from(onlineUser));
+  });
+
   socket.on("disconnect", () => {
     console.log("User disconnected:", socket.id);
+  });
+
+  socket.on("user-offline", (userId) => {
+    onlineUser.delete(userId);
+    io.emit("online-users", Array.from(onlineUser));
   });
 });
 

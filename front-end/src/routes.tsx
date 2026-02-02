@@ -3,6 +3,7 @@ import Home from "./pages/home/Home";
 import Login from "./pages/login/Login";
 import Signup from "./pages/signup/Signup";
 import ProtectedRoute from "./components/ProtectedRoute";
+import Profile from "./pages/profile/Profile";
 
 const router = createBrowserRouter([
   {
@@ -12,16 +13,22 @@ const router = createBrowserRouter([
         <Home />
       </ProtectedRoute>
     ),
-    children: [
-      {
-        path: "/home",
-        element: (
-          <ProtectedRoute>
-            <Home />
-          </ProtectedRoute>
-        ),
-      },
-    ],
+  },
+  {
+    path: "/home",
+    element: (
+      <ProtectedRoute>
+        <Home />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/profile",
+    element: (
+      <ProtectedRoute>
+        <Profile />
+      </ProtectedRoute>
+    ),
   },
   {
     path: "/signup",

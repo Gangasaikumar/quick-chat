@@ -21,9 +21,8 @@ const UsersList = ({
   searchKey: string;
   clearSearchKey: () => void;
 }) => {
-  const { allUsers, allChats, loggedUserData, selectedChat } = useSelector(
-    (state: RootState) => state.userData,
-  );
+  const { allUsers, allChats, loggedUserData, selectedChat, onlineUsers } =
+    useSelector((state: RootState) => state.userData);
   const dispatch = useDispatch();
 
   const handleCreateNewChat = async (user: UserState) => {
@@ -126,9 +125,9 @@ const UsersList = ({
   };
 
   useEffect(() => {
-    socket.on("receive-message", (message) => {
+    socket.off("message-count").on("message-count", (message) => {
       const selectedChat = store.getState().userData.selectedChat;
-      const allChats = store.getState().userData.allChats;
+      let allChats = store.getState().userData.allChats;
       if (selectedChat._id != message.chatId) {
         const updatedAllChats = allChats.map((chat) => {
           if (chat._id === message.chatId) {
@@ -140,8 +139,15 @@ const UsersList = ({
           }
           return chat;
         });
-        dispatch(setAllChats(updatedAllChats));
+        allChats = updatedAllChats;
       }
+      //  find the latest chat
+      const latestChat = allChats.find((chat) => chat._id === message.chatId);
+      // get all other chats
+      const otherChats = allChats.filter((chat) => chat._id != message.chatId);
+      // create new array latest chat on top & then other chats
+      allChats = [latestChat as ChatState, ...otherChats];
+      dispatch(setAllChats(allChats));
     });
   }, []);
 
@@ -160,11 +166,16 @@ const UsersList = ({
           }}
         >
           <div className="filter-user-display">
-            {user.profilePic ? (
+            {user.profilePic && user.profilePic.trim() !== "" ? (
               <img
                 src={user.profilePic}
                 alt="Profile Pic"
                 className="user-profile-image"
+                style={
+                  onlineUsers?.includes(user._id)
+                    ? { border: "4px solid #82e0aa", lineHeight: "42px" }
+                    : {}
+                }
               />
             ) : (
               <div
@@ -172,6 +183,11 @@ const UsersList = ({
                   IsSelectedChat(user._id)
                     ? "user-selected-avatar"
                     : "user-default-avatar"
+                }
+                style={
+                  onlineUsers?.includes(user._id)
+                    ? { border: "4px solid #82e0aa", lineHeight: "42px" }
+                    : {}
                 }
               >
                 {getInitials(user)}
