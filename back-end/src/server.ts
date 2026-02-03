@@ -64,15 +64,14 @@ const io = new Server(server, {
 const onlineUser = new Set();
 
 io.on("connection", (socket) => {
-  socket.on("connect", (msg) => {
-    console.log("User connected:", socket.id);
-  });
   socket.on("join-room", (userId) => {
     socket.join(userId);
+    onlineUser.add(userId);
+    io.emit("online-users", Array.from(onlineUser));
     console.log("User joined room:", userId);
   });
 
-  socket.once("send-message", (message) => {
+  socket.on("send-message", (message) => {
     io.to(message.members[0])
       .to(message.members[1])
       .emit("receive-message", message);
@@ -94,17 +93,14 @@ io.on("connection", (socket) => {
       .emit("user-typing", message);
   });
 
-  socket.on("user-online", (userId) => {
-    onlineUser.add(userId);
-    io.emit("online-users", Array.from(onlineUser));
-  });
-
-  socket.on("disconnect", () => {
-    console.log("User disconnected:", socket.id);
-  });
+  // socket.on("user-online", (userId) => {
+  //   onlineUser.add(userId);
+  //   io.emit("online-users", Array.from(onlineUser));
+  // });
 
   socket.on("user-offline", (userId) => {
     onlineUser.delete(userId);
+    console.log("User left room:", userId);
     io.emit("online-users", Array.from(onlineUser));
   });
 });

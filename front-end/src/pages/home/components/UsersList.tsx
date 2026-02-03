@@ -126,8 +126,7 @@ const UsersList = ({
 
   useEffect(() => {
     socket.off("message-count").on("message-count", (message) => {
-      const selectedChat = store.getState().userData.selectedChat;
-      let allChats = store.getState().userData.allChats;
+      let tempAllChats = allChats;
       if (selectedChat._id != message.chatId) {
         const updatedAllChats = allChats.map((chat) => {
           if (chat._id === message.chatId) {
@@ -139,27 +138,31 @@ const UsersList = ({
           }
           return chat;
         });
-        allChats = updatedAllChats;
+        tempAllChats = updatedAllChats;
       }
       //  find the latest chat
-      const latestChat = allChats.find((chat) => chat._id === message.chatId);
+      const latestChat = tempAllChats.find(
+        (chat) => chat._id === message.chatId,
+      );
       // get all other chats
-      const otherChats = allChats.filter((chat) => chat._id != message.chatId);
+      const otherChats = tempAllChats.filter(
+        (chat) => chat._id != message.chatId,
+      );
       // create new array latest chat on top & then other chats
-      allChats = [latestChat as ChatState, ...otherChats];
-      dispatch(setAllChats(allChats));
+      tempAllChats = [latestChat as ChatState, ...otherChats];
+      dispatch(setAllChats(tempAllChats));
     });
   }, []);
 
   return (
     <div className="user-list">
-      {getSortedData().map((user: UserState) => (
+      {getSortedData().map((user: UserState, index: number) => (
         <div
           className={
             "chat-user" +
             (IsSelectedChat(user._id) ? " selected-user" : " filtered-user")
           }
-          key={user._id}
+          key={index}
           onClick={(e) => {
             e.stopPropagation();
             handleOpenChat(user._id);

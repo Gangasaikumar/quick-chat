@@ -165,8 +165,6 @@ const ChatArea = () => {
       });
 
       socket.on("message-count-cleared", (message) => {
-        // const selectedChat = store.getState().userData.selectedChat;
-        // const allChats = store.getState().userData.allChats;
         if (selectedChat._id === message.chatId) {
           // UPDATING UNREAD MESSAGE COUNT
           const updatedChats = allChats.map((chat) => {
@@ -190,6 +188,7 @@ const ChatArea = () => {
           });
         }
       });
+
       socket.on("user-typing", (message) => {
         setTypingUser(message?.sender);
         if (
