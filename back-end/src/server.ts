@@ -61,13 +61,13 @@ const io = new Server(server, {
   },
 });
 
-const onlineUser = new Set();
+const onlineUsers = new Map<string, string>();
 
 io.on("connection", (socket) => {
   socket.on("join-room", (userId) => {
     socket.join(userId);
-    onlineUser.add(userId);
-    io.emit("online-users", Array.from(onlineUser));
+    onlineUsers.set(socket.id, userId);
+    io.emit("online-users", [...onlineUsers.values()]);
     console.log("User joined room:", userId);
   });
 
@@ -93,15 +93,17 @@ io.on("connection", (socket) => {
       .emit("user-typing", message);
   });
 
-  // socket.on("user-online", (userId) => {
-  //   onlineUser.add(userId);
-  //   io.emit("online-users", Array.from(onlineUser));
-  // });
-
   socket.on("user-offline", (userId) => {
-    onlineUser.delete(userId);
+    onlineUsers.delete(socket.id);
     console.log("User left room:", userId);
-    io.emit("online-users", Array.from(onlineUser));
+    io.emit("online-users", [...onlineUsers.values()]);
+  });
+
+  socket.on("disconnect", () => {
+    onlineUsers.delete(socket.id);
+    io.emit("online-users", [...onlineUsers.values()]);
+    console.log("User disconnected:", socket.id);
+    console.log("Online users:", [...onlineUsers.values()]);
   });
 });
 
