@@ -51,8 +51,8 @@ const UsersList = ({
     }
     const chat = allChats.find(
       (chat) =>
-        chat.members?.map((m) => m._id)?.includes(chatId) &&
-        chat.members?.map((m) => m._id)?.includes(loggedUserData._id),
+        chat?.members?.map((m) => m._id)?.includes(chatId) &&
+        chat?.members?.map((m) => m._id)?.includes(loggedUserData._id),
     );
     if (chat) {
       dispatch(setSelectedChat(chat));
@@ -62,14 +62,14 @@ const UsersList = ({
 
   const IsSelectedChat = (chatId: string) => {
     if (selectedChat._id) {
-      return selectedChat.members?.map((m) => m._id)?.includes(chatId);
+      return selectedChat?.members?.map((m) => m._id)?.includes(chatId);
     }
     return false;
   };
 
   const getLastMessage = (user: UserState) => {
     const chat = allChats?.find((chat) =>
-      chat.members?.map((m) => m._id)?.includes(user._id),
+      chat?.members?.map((m) => m._id)?.includes(user._id),
     );
     const isYou =
       chat?.lastMessage?.sender === loggedUserData._id ||
@@ -115,7 +115,7 @@ const UsersList = ({
         )
         .filter((user): user is UserState => user !== undefined);
     } else {
-      return allUsers.filter((user) => {
+      return allUsers?.filter((user) => {
         return (
           user.firstName?.toLowerCase().includes(searchKey?.toLowerCase()) ||
           user.lastName?.toLowerCase().includes(searchKey?.toLowerCase())
@@ -142,11 +142,11 @@ const UsersList = ({
       }
       //  find the latest chat
       const latestChat = tempAllChats.find(
-        (chat) => chat._id === message.chatId,
+        (chat) => chat?._id === message.chatId,
       );
       // get all other chats
       const otherChats = tempAllChats.filter(
-        (chat) => chat._id != message.chatId,
+        (chat) => chat?._id != message.chatId,
       );
       // create new array latest chat on top & then other chats
       tempAllChats = [latestChat as ChatState, ...otherChats];
@@ -156,7 +156,7 @@ const UsersList = ({
 
   return (
     <div className="user-list">
-      {getSortedData().map((user: UserState, index: number) => (
+      {getSortedData()?.map((user: UserState, index: number) => (
         <div
           className={
             "chat-user" +
