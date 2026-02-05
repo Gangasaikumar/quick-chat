@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import { store, type RootState } from "../../../redux-store/store";
+import { type RootState } from "../../../redux-store/store";
 import {
   setAllChats,
   setSelectedChat,
