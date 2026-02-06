@@ -63,7 +63,7 @@ body {
 }
 
 .container-back-img {
-  background-image: url('/images/quick-chat-app-background.jpg');
+  background-image: url('https://t3.ftcdn.net/jpg/03/89/94/34/360_F_389943415_0IMXIfCIo4OUzwtsIhxCGeKEdRrhvNym.jpg');
   background-repeat: no-repeat;
   background-size: cover;
   width: 100%;
@@ -747,4 +747,12 @@ input[type="file"]::file-selector-button:hover {
 input[type="file"]::file-selector-button:active {
   background-color: var(--bg-button-active);
   color: var(--text-dark);
+}
+
+.emoji-picker {
+  position: absolute;
+  bottom: 110px;
+  right: 140px;
+  z-index: 1000;
+  filter: drop-shadow(0 0 10px var(--bg-hover));
 }
