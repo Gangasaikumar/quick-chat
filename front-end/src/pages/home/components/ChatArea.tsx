@@ -165,8 +165,6 @@ const ChatArea = () => {
       });
 
       socket.on("message-count-cleared", (message) => {
-        // const selectedChat = store.getState().userData.selectedChat;
-        // const allChats = store.getState().userData.allChats;
         if (selectedChat._id === message.chatId) {
           // UPDATING UNREAD MESSAGE COUNT
           const updatedChats = allChats.map((chat) => {
@@ -190,6 +188,7 @@ const ChatArea = () => {
           });
         }
       });
+
       socket.on("user-typing", (message) => {
         setTypingUser(message?.sender);
         if (
@@ -267,7 +266,7 @@ const ChatArea = () => {
                       {isSender(message) && message.read && (
                         <i
                           className="fa fa-check-circle"
-                          style={{ color: "#e74c3c" }}
+                          style={{ color: "var(--primary-color)" }}
                         />
                       )}
                     </div>
@@ -282,20 +281,15 @@ const ChatArea = () => {
               </div>
             </div>
             {showEmojiPicker && (
-              <EmojiPicker
-                onEmojiClick={(e) => {
-                  setMessage((prev) => prev + e.emoji);
-                }}
-                style={{
-                  width: "300px",
-                  height: "400px",
-                  position: "absolute",
-                  bottom: "110px",
-                  right: "110px",
-                  zIndex: 1000,
-                  filter: "drop-shadow(0 0 10px #ddd)",
-                }}
-              />
+              <div className="emoji-picker">
+                <EmojiPicker
+                  onEmojiClick={(e) => {
+                    setMessage((prev) => prev + e.emoji);
+                  }}
+                  width={300}
+                  height={400}
+                />
+              </div>
             )}
             <div className="send-message-div">
               <label htmlFor="file">

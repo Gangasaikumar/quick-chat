@@ -6,27 +6,22 @@ import { socket } from "../../sockets/Socket";
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "../../redux-store/store";
 import { setOnlineUsers } from "../../redux-store/userSlice";
-import Loader from "../../components/Loader";
 
 const Home = () => {
   const { loggedUserData } = useSelector((state: RootState) => state.userData);
-  const { onlineUsers } = useSelector((state: RootState) => state.userData);
-  const loader = useSelector((state: RootState) => state.loader);
   const dispatch = useDispatch();
   useEffect(() => {
     if (loggedUserData._id) {
-      console.log("login user data::", loggedUserData._id);
       socket.emit("join-room", loggedUserData._id);
-      socket.emit("user-online", loggedUserData._id);
-      socket.on("online-users", (onlineUsers) => {
-        dispatch(setOnlineUsers(onlineUsers));
+      socket.off("online-users").on("online-users", (updatedOnlineUsers) => {
+        dispatch(setOnlineUsers(updatedOnlineUsers));
       });
     }
     return () => {};
-  }, [loggedUserData._id, onlineUsers]);
+  }, [loggedUserData._id]);
+
   return (
     <>
-      {loader && <Loader />}
       <div className="home-page">
         <Header />
         <div className="main-content">
